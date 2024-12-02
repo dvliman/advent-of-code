@@ -1,0 +1,10 @@
+.nrepl-port
+.cpcache
+.lsp
+.calva
+.clj-kondo
+resources/transactor.properties
+datomic-data
+target
+docker
+datomic-pro
