@@ -1,4 +1,4 @@
-(ns dvliman.2024.day1
+(ns dvliman.2024.day01
   (:require [clojure.java.io :as io]
             [clojure.string :as str]))
 

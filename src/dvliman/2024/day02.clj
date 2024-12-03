@@ -1,4 +1,4 @@
-(ns dvliman.2024.day2
+(ns dvliman.2024.day02
   (:require [clojure.java.io :as io]))
 
 (defn tolerance [x y]
@@ -35,6 +35,7 @@
      (map (partial reduce analyze {:modes [] :tolerances [] :last-level nil}))
      (filter safe?)
      count)
+;; => 598
 
 (defn ignore-one [xs target-index]
   (vec (keep-indexed (fn [i x]
@@ -71,6 +72,7 @@
           (map (partial filter safe?))
           (filter seq)
           count)))
+;; => 634
 
 ;; original
 #_'((1 2 7 8 9) (9 7 6 2 1) (1 3 2 4 5) (8 6 4 4 1))
