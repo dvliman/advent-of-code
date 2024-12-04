@@ -31,3 +31,28 @@
              (filter #(= % '(\X \M \A \S)))
              count))))
 ;; => 2344
+
+(defn check-x-direction [[dx dy] [row col] grid]
+  (map (partial get-in grid)
+       (take 3 (iterate (fn [[row col]]
+                          [(+ row dx) (+ col dy)]) [row col]))))
+
+(->> "2024/day4.txt"
+     io/resource
+     io/reader
+     line-seq
+     (map vec)
+     vec
+     ((fn process' [input]
+        (->> (for [row (range (count input))
+                   col (range (count (first input)))]
+               (let [se (check-x-direction [1 1] [row (dec col)] input)
+                     ne (check-x-direction [1 -1] [row (inc col)] input)]
+                 (cond
+                   (and (or (= se '(\S \A \M)) (= se '(\M \A \S)))
+                        (or (= ne '(\S \A \M)) (= ne '(\M \A \S))))
+                   :match
+                   :else nil)))
+             (filter some?)
+             count))))
+;; => 1815
