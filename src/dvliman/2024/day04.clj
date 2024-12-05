@@ -16,7 +16,7 @@
        (take 4 (iterate (fn [[row col]]
                           [(+ row dx) (+ col dy)]) [row col]))))
 
-(->> "2024/day4.txt"
+(->> "2024/day04.txt"
      io/resource
      io/reader
      line-seq
@@ -37,7 +37,7 @@
        (take 3 (iterate (fn [[row col]]
                           [(+ row dx) (+ col dy)]) [row col]))))
 
-(->> "2024/day4.txt"
+(->> "2024/day04.txt"
      io/resource
      io/reader
      line-seq

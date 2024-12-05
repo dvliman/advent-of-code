@@ -4,7 +4,7 @@
 (defn parse-int [x]
   (Integer/parseInt x))
 
-#_(->> "2024/day3.txt"
+(->> "2024/day03.txt"
      io/resource
      io/reader
      line-seq
@@ -15,7 +15,7 @@
      (reduce +))
 ;; => 166357705
 
-(->> "2024/day3.txt"
+(->> "2024/day03.txt"
      io/resource
      io/reader
      line-seq

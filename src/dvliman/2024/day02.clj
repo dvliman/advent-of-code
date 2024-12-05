@@ -26,7 +26,7 @@
        (== 1 (count (set tolerances)))
        (true? (first tolerances))))
 
-(->> "2024/day2.txt"
+(->> "2024/day02.txt"
      io/resource
      io/reader
      line-seq
@@ -49,7 +49,7 @@
 ;; => ([6 4 4 1] [8 4 4 1] [8 6 4 1] [8 6 4 1] [8 6 4 4])
 
 (let [{safes true unsafes false}
-      (->> "2024/day2.txt"
+      (->> "2024/day02.txt"
            io/resource
            io/reader
            line-seq

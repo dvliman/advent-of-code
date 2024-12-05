@@ -9,7 +9,7 @@
 (defn parse-int [x]
   (Integer/parseInt x))
 
-(let [locations (->> "2024/day1.txt"
+(let [locations (->> "2024/day01.txt"
                      read-lines
                      (map #(str/split % #" ")))
       group1 (sort (map (comp parse-int first) locations))
@@ -20,7 +20,7 @@
    (reduce +)))
 ;; => 2031679
 
-(let [locations (->> "2024/day1.txt"
+(let [locations (->> "2024/day01.txt"
                      read-lines
                      (map #(str/split % #" ")))
       group1 (sort (map (comp parse-int first) locations))
