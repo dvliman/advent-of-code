@@ -11,7 +11,7 @@
   (let [mid (Math/floor (/ (count coll) 2))]
     (nth coll mid)))
 
-(let [[ordering-rules _ updates] (->> "2024/day05.txt"
+(let [[ordering-rules _ updates] (->> "2024/day05-example.txt"
                                       io/resource
                                       io/reader
                                       line-seq
@@ -37,8 +37,7 @@
        (reduce +)))
 ;; => 4578
 
-
-(let [[ordering-rules _ updates] (->> "2024/day05-example.txt"
+(let [[ordering-rules _ updates] (->> "2024/day05.txt"
                                       io/resource
                                       io/reader
                                       line-seq
@@ -58,32 +57,20 @@
                                 before-others? (>= (count intersected) (count before-others))]
                             (if before-others?
                               (update acc :updates conj page)
-                              (do
-                                #d [page (set/intersection (set ordering) before-others)]
-                                (-> acc
-                                    (update :incorrect-pages conj page)
-                                    (update :updates conj page)))))) {:updates [] :incorrect-pages []} updates))))
-       #_(filter (comp (complement empty?) :incorrect-pages))
-       #_(map :updates)
-       #_#_(map middle-page)
-         (reduce +))
-  ordering)
+                              (-> acc
+                                  (assoc :invalid? true)
+                                  (update :updates conj page))))) {:updates [] :invalid? false} updates))))
+       (filter (comp true? :invalid?))
+       (map :updates)
+       (map (partial sort (fn [a b]
+                            (cond
+                              (some #(= [b a] %) ordering)
+                              1
+                              (some #(= [a b] %) ordering)
+                              -1
+                              :else
+                              0))))
 
-(user/logs 0)
-
-
-[[75 #{[75 47] [75 53] [75 61] [75 97]}]
- [13 #{[13 29]}]
- [13 #{[13 29] [13 47] [13 75]}]
- [29 #{[29 47]}]
- [75 #{[75 47] [75 53] [75 61] [75 97]}]
- [13 #{[13 29]}]
- [13 #{[13 29] [13 47] [13 75]}]
- [29 #{[29 47]}]]
-
-({:incorrect-pages [], :updates [75 47 61 53 29]}
- {:incorrect-pages [], :updates [97 61 53 29 13]}
- {:incorrect-pages [], :updates [75 29 13]}
- {:incorrect-pages [75], :updates [75 97 47 61 53]}    ;; fixed: 97,75,47,61,53.
- {:incorrect-pages [13], :updates [61 13 29]}          ;; fixed: 61,29,13
- {:incorrect-pages [13 29], :updates [97 13 75 29 47]});; fixed: 97,75,47,29,13
+       (map middle-page)
+       (reduce +)))
+;; => 6179
