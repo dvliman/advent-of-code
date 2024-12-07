@@ -17,9 +17,9 @@
        (iterate (fn [[row col]]
                   [(+ row dx) (+ col dy)]))
        (take-while (fn [[row col]]
-                     (or (not (contains? (set obstacles) [row col]))
-                         (>= row (count grid))
-                         (>= col (count (first grid))))))))
+                     (and (not (contains? (set obstacles) [row col]))
+                          (< row (count grid))
+                          (< col (count (first grid))))))))
 
 #_(->> "2024/day06-example.txt"
      io/resource
@@ -28,27 +28,27 @@
      (map vec)
      vec
      ((fn [grid]
-        (->> (for [row (range (count grid))
-                   col (range (count (first grid)))]
-               (cond
-                 (= \^ (get-in grid [row col]))
-                 [:guard [row col]]
+        [grid
+         (->> (for [row (range (count grid))
+                    col (range (count (first grid)))]
+                (cond
+                  (= \^ (get-in grid [row col]))
+                  [:guard [row col]]
 
-                 (= \# (get-in grid [row col]))
-                 [:obstacle [row col]]
+                  (= \# (get-in grid [row col]))
+                  [:obstacle [row col]]
 
-                 :else
-                 nil)))))
-     (filter some?)
-     ((fn [locations]
-        (let [{:keys [guard obstacle]} (group-by first locations)
+                  :else
+                  nil)))]))
+     ((fn [[grid locations]]
+        (let [{:keys [guard obstacle]} (group-by first (filter some? locations))
               guard-location     (-> guard last last)
               obstacle-locations (->> obstacle (map second))]
           (loop [result [] starting-location guard-location direction up]
             (prn  "starting: " starting-location ", direction: " direction)
-            (let [pathways (walk direction starting-location obstacle-locations)]
+            (let [pathways (walk direction starting-location obstacle-locations grid)]
               (prn " pathways: " pathways)
-              (if (seq pathways)
+              (if (not= pathways '[starting-location]) ;; walk returns starting-loc
                 (recur (concat result pathways) (last pathways) (get next-direction direction))
                 (do
                   (prn "hitting end")
@@ -66,5 +66,18 @@
            [\# \. \. \. \. \. \. \. \. \.]
            [\. \. \. \. \. \. \# \. \. \.]])
 
+(walk down [7 7] '([0 4] [1 9] [3 2] [4 7] [6 1] [7 8] [8 0] [9 6]) grid)
+;; => ([7 7] [8 7] [9 7]) this is the last step - it shouldn't return [9 7]
 
-#_(walk down [7 7]  '([7 8] [9 6] [1 9] [4 7] [8 0] [6 1] [0 4] [3 2]) grid)
+(walk down [9 7] '([0 4] [1 9] [3 2] [4 7] [6 1] [7 8] [8 0] [9 6]) grid)
+;; => ([9 7]) return itself
+
+(walk right [5 7] '([0 4] [1 9] [3 2] [4 7] [6 1] [7 8] [8 0] [9 6]) grid)
+;; => ([5 7] [5 8] [5 9])
+
+
+(walk down [5 9] '([0 4] [1 9] [3 2] [4 7] [6 1] [7 8] [8 0] [9 6]) grid)
+;; => ([5 9] [6 9] [7 9] [8 9] [9 9])
+
+(walk left [9 9] '([0 4] [1 9] [3 2] [4 7] [6 1] [7 8] [8 0] [9 6]) grid)
+;; => ([9 9] [9 8] [9 7])
