@@ -1,6 +1,5 @@
 (ns dvliman.2024.day06
-  (:require [clojure.java.io :as io]
-            [clojure.set :as set]))
+  (:require [clojure.java.io :as io]))
 
 (def up    [-1 0])
 (def down  [1 0])
@@ -22,7 +21,7 @@
                           (< row (count grid))
                           (< col (count (first grid))))))))
 
-(->> "2024/day06-example.txt"
+(->> "2024/day06.txt"
      io/resource
      io/reader
      line-seq
@@ -48,13 +47,10 @@
           (loop [result [] starting-location guard-location direction up]
             (let [pathways (walk direction starting-location obstacle-locations grid)
                   pathways (remove (partial = starting-location) pathways)]
-              ;; TODO: terminating too early on [4 2] going right, seen [4 4] (maybe compare just the 'last' pathways?)
-              (if (empty? (set/intersection (set result) (set pathways)))
+              (if (seq pathways)
                 (recur (concat result pathways) (last pathways) (get next-direction direction))
-                (do
-                  (prn (set/intersection (set result) (set pathways)))
-                  result))))))))
-
+                result))))))
+     set count)
 
 (def grid [[\. \. \. \. \# \. \. \. \. \.]
            [\. \. \. \. \. \. \. \. \. \#]
@@ -66,19 +62,6 @@
            [\. \. \. \. \. \. \. \. \# \.]
            [\# \. \. \. \. \. \. \. \. \.]
            [\. \. \. \. \. \. \# \. \. \.]])
-(set/intersection #{[1 2] [2 3]} #{[3 4]})
-(walk down [7 7] '([0 4] [1 9] [3 2] [4 7] [6 1] [7 8] [8 0] [9 6]) grid)
-;; => ([7 7] [8 7] [9 7]) this is the last step - it shouldn't return [9 7]
 
-(walk down [9 7] '([0 4] [1 9] [3 2] [4 7] [6 1] [7 8] [8 0] [9 6]) grid)
-;; => ([9 7]) return itself
-
-(walk right [5 7] '([0 4] [1 9] [3 2] [4 7] [6 1] [7 8] [8 0] [9 6]) grid)
-;; => ([5 7] [5 8] [5 9])
-
-
-(walk down [5 9] '([0 4] [1 9] [3 2] [4 7] [6 1] [7 8] [8 0] [9 6]) grid)
-;; => ([5 9] [6 9] [7 9] [8 9] [9 9])
-
-(walk left [9 9] '([0 4] [1 9] [3 2] [4 7] [6 1] [7 8] [8 0] [9 6]) grid)
+#_(walk left [9 9] '([0 4] [1 9] [3 2] [4 7] [6 1] [7 8] [8 0] [9 6]) grid)
 ;; => ([9 9] [9 8] [9 7])
