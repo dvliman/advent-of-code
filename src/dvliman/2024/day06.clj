@@ -46,10 +46,14 @@
               guard-location     (-> guard last last)
               obstacle-locations (->> obstacle (map second))]
           (loop [result [] starting-location guard-location direction up]
-            (prn  "starting: " starting-location ", direction: " direction)
             (let [pathways (walk direction starting-location obstacle-locations grid)
                   pathways (remove (partial = starting-location) pathways)]
-              (if (> 1 (count (set/intersection (set result) (set pathways))))
+              ;; TODO: terminating too early on [4 2] going right, seen [4 4]
+              (when (= [4 2] starting-location)
+                #_#_(prn (set result))
+                (prn (set pathways))
+                (prn (set/intersection (set result) (set pathways))))
+              (if (empty? (set/intersection (set result) (set pathways)))
                 (recur (concat result pathways) (last pathways) (get next-direction direction))
                 result)))))))
 
@@ -64,7 +68,7 @@
            [\. \. \. \. \. \. \. \. \# \.]
            [\# \. \. \. \. \. \. \. \. \.]
            [\. \. \. \. \. \. \# \. \. \.]])
-
+(set/intersection #{[1 2] [2 3]} #{[3 4]})
 (walk down [7 7] '([0 4] [1 9] [3 2] [4 7] [6 1] [7 8] [8 0] [9 6]) grid)
 ;; => ([7 7] [8 7] [9 7]) this is the last step - it shouldn't return [9 7]
 
