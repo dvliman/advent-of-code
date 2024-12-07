@@ -48,14 +48,12 @@
           (loop [result [] starting-location guard-location direction up]
             (let [pathways (walk direction starting-location obstacle-locations grid)
                   pathways (remove (partial = starting-location) pathways)]
-              ;; TODO: terminating too early on [4 2] going right, seen [4 4]
-              (when (= [4 2] starting-location)
-                #_#_(prn (set result))
-                (prn (set pathways))
-                (prn (set/intersection (set result) (set pathways))))
+              ;; TODO: terminating too early on [4 2] going right, seen [4 4] (maybe compare just the 'last' pathways?)
               (if (empty? (set/intersection (set result) (set pathways)))
                 (recur (concat result pathways) (last pathways) (get next-direction direction))
-                result)))))))
+                (do
+                  (prn (set/intersection (set result) (set pathways)))
+                  result))))))))
 
 
 (def grid [[\. \. \. \. \# \. \. \. \. \.]
