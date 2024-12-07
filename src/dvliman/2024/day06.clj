@@ -1,5 +1,6 @@
 (ns dvliman.2024.day06
-  (:require [clojure.java.io :as io]))
+  (:require [clojure.java.io :as io]
+            [clojure.set :as set]))
 
 (def up    [-1 0])
 (def down  [1 0])
@@ -21,7 +22,7 @@
                           (< row (count grid))
                           (< col (count (first grid))))))))
 
-#_(->> "2024/day06-example.txt"
+(->> "2024/day06-example.txt"
      io/resource
      io/reader
      line-seq
@@ -46,13 +47,11 @@
               obstacle-locations (->> obstacle (map second))]
           (loop [result [] starting-location guard-location direction up]
             (prn  "starting: " starting-location ", direction: " direction)
-            (let [pathways (walk direction starting-location obstacle-locations grid)]
-              (prn " pathways: " pathways)
-              (if (not= pathways '[starting-location]) ;; walk returns starting-loc
+            (let [pathways (walk direction starting-location obstacle-locations grid)
+                  pathways (remove (partial = starting-location) pathways)]
+              (if (> 1 (count (set/intersection (set result) (set pathways))))
                 (recur (concat result pathways) (last pathways) (get next-direction direction))
-                (do
-                  (prn "hitting end")
-                  result))))))))
+                result)))))))
 
 
 (def grid [[\. \. \. \. \# \. \. \. \. \.]
