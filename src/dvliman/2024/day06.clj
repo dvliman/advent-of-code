@@ -50,7 +50,7 @@
               (if (seq pathways)
                 (recur (concat result pathways) (last pathways) (get next-direction direction))
                 result))))))
-     set count)
+     #_#_set count)
 
 (def grid [[\. \. \. \. \# \. \. \. \. \.]
            [\. \. \. \. \. \. \. \. \. \#]
