@@ -14,11 +14,28 @@
        (some? s2) s2
        :else nil))))
 
-(combo/selections ["+" "*"] 1)
-(interleave)
+(defn evaluate [expressions]
+  (first (reduce
+          (fn [[total operand] x]
+            (cond
+              (and (nil? total) (nil? operand) (int? x))
+              [x nil]
 
+              (or (= x "*") (= x "+"))
+              [total x]
 
-(->> "2024/day07-example.txt"
+              (and (int? x) (= operand "*"))
+              [(* total x) nil]
+
+              (and (int? x) (= operand "+"))
+              [(+ total x) nil]
+
+              :else
+              [total operand]))
+          [nil nil]
+          expressions)))
+
+(->> "2024/day07.txt"
      io/resource
      io/reader
      line-seq
@@ -28,9 +45,60 @@
                      (let [test-value (first nums)
                            numbers    (rest nums)]
                        [test-value
-                        numbers
-                        (combo/selections ["+" "*"] (dec (count numbers)))
-                        (reduce (fn [acc orders]
-                                  (conj acc (interleave-all numbers orders)))
-                                []
-                                (combo/selections ["+" "*"] (dec (count numbers))))])))))
+                        (reduce
+                         (fn [acc pattern]
+                           (if (= test-value (evaluate (interleave-all numbers pattern)))
+                             (reduced true)
+                             acc))
+                         false
+                         (combo/selections ["+" "*"] (dec (count numbers))))]))))
+     (filter (comp true? second))
+     (map first)
+     (reduce +))
+;; => 2314935962622
+
+(defn evaluate2 [expressions]
+  (first (reduce
+          (fn [[total operand] x]
+            (cond
+              (and (nil? total) (nil? operand) (int? x))
+              [x nil]
+
+              (or (= x "*") (= x "+") (= x "||"))
+              [total x]
+
+              (and (int? x) (= operand "*"))
+              [(* total x) nil]
+
+              (and (int? x) (= operand "+"))
+              [(+ total x) nil]
+
+              (and (int? x) (= operand "||"))
+              [(parse-long (str total x)) nil]
+
+              :else
+              [total operand]))
+          [nil nil]
+          expressions)))
+
+(->> "2024/day07.txt"
+     io/resource
+     io/reader
+     line-seq
+     (map (partial re-seq #"\d+"))
+     (map (partial map parse-long))
+     (map (partial (fn [nums]
+                     (let [test-value (first nums)
+                           numbers    (rest nums)]
+                       [test-value
+                        (reduce
+                         (fn [acc pattern]
+                           (if (= test-value (evaluate2 (interleave-all numbers pattern)))
+                             (reduced true)
+                             acc))
+                         false
+                         (combo/selections ["+" "*" "||"] (dec (count numbers))))]))))
+     (filter (comp true? second))
+     (map first)
+     (reduce +))
+;; => 401477450831495
